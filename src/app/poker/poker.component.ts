@@ -1,4 +1,5 @@
 import { Component, ElementRef, Renderer2 } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { Suits } from './enums';
 import { Card } from './models';
@@ -10,26 +11,37 @@ import { GenerateService, CompareService } from './services';
     styleUrls: ['./poker.component.scss'],
 })
 export class PokerComponent {
+    form: FormGroup;
+    result: string;
+
     constructor(
         private generateService: GenerateService,
         private compareService: CompareService,
         private element: ElementRef,
-        private renderer: Renderer2
-    ) {}
+        private renderer: Renderer2,
+        private fb: FormBuilder,
+    ) {
+        this.form = this.fb.group({
+            playerName: [null],
+        });
+    }
 
     generateCards(): void {
         this.generateService.clearCache();
 
-        const [houseHand, houseDeck] = this.generateService.generateHand();
-        const [userHand, userDeck] = this.generateService.generateHand();
+        const [houseHand, houseDeck, houseValuesCount] = this.generateService.generateHand();
+        const [userHand, userDeck, userValuesCount] = this.generateService.generateHand();
 
-        this.compareService.comparison([houseHand, userHand], 2);
+        console.log(houseValuesCount);
+        console.log(userValuesCount);
+
+        this.result = this.compareService.comparison([houseHand, userHand], [houseValuesCount, userValuesCount]);
 
         const tableElement = this.element.nativeElement.querySelector('#table');
         this.renderer.setProperty(tableElement, 'textContent', '');
 
         this.createHtml(houseDeck, tableElement, 'House');
-        this.createHtml(userDeck, tableElement, 'User');
+        this.createHtml(userDeck, tableElement, this.form.value.playerName ? this.form.value.playerName : 'User');
     }
 
     createHtml(deck: Card[], tableElement: HTMLElement, title: string): void {

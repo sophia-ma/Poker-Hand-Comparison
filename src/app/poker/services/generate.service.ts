@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { CardValue, Suits } from '../enums';
-import { Card } from '../models';
+import { Card, CardValueCount } from '../models';
 
 type Cache = {
     [key in Suits]: CardValue[];
@@ -49,9 +49,10 @@ export class GenerateService {
         });
     }
 
-    generateHand(players: number = 2): [string, Card[]] {
+    generateHand(players: number = 2): [string, Card[], CardValueCount] {
         let result: string[] = [];
         let cards: Card[] = [];
+        const valuesCount: CardValueCount = {};
 
         for (let i = 0; i < this.validCardsAmount; i++) {
             const card = this.generateRandomCard();
@@ -61,13 +62,25 @@ export class GenerateService {
             this.totalCardsUsed++;
 
             cards = [...cards, card];
-            result = [...result, `${card.value}${card.suit}`];
+            result = [...result, `${value}${suit}`];
         }
 
         if (this.totalCardsUsed > this.validCardsAmount * players) {
             this.clearCache();
         }
 
-        return [result.join(' ').toUpperCase(), cards];
+        for (const element of cards) {
+            const { value } = element;
+
+            if (valuesCount[value] === undefined) {
+                valuesCount[value] = 1;
+            } else {
+                valuesCount[value]++;
+            }
+        }
+        console.log('cards', cards);
+        console.log('valuesCount', valuesCount);
+
+        return [result.join(' ').toUpperCase(), cards, valuesCount];
     }
 }

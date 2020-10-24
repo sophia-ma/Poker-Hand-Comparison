@@ -8,6 +8,7 @@ import {
     Suits,
     ValuesOccurrence,
 } from '../enums';
+import { CardValueCount } from '../models';
 
 @Injectable({
     providedIn: 'root',
@@ -21,30 +22,70 @@ export class CompareService {
         K: '13',
         A: '14',
     };
-    comparison(hands: string[], players: number): void {
-        // TODO v2: More players implementation
 
+    comparison(hands: string[], valuesCount: CardValueCount[]): string {
+        // TODO v2: More players implementation
         const pointsHouse = this.getPointsFromRule(hands[0]);
         const pointsUser = this.getPointsFromRule(hands[1]);
 
         if (!pointsHouse || !pointsUser) {
-            return;
+            return 'Cards and suits are not valid, therefore cannot compare';
         }
 
         console.log('pointsHouse', pointsHouse);
         console.log('pointsUser', pointsUser);
 
-        let final: FinalResult = null;
-
         if (pointsHouse > pointsUser) {
-            final = FinalResult.Loss;
+            return FinalResult[FinalResult.Loss];
         } else if (pointsHouse < pointsUser) {
-            final = FinalResult.Win;
+            return FinalResult[FinalResult.Win];
         } else {
-            final = this.whoHasTheBestHand(hands[0], hands[1]);
-        }
+            const [houseValuesCount, userValuesCount] = valuesCount;
 
-        console.log('Final Result:', FinalResult[final]);
+            let index = 0;
+            const houseValues = this.sortAndRemoveDuplicates(houseValuesCount);
+            const userValues = this.sortAndRemoveDuplicates(userValuesCount);
+
+            while (index < userValues.length) {
+                const userValue = this.remappedRoyal(userValues[index]);
+                const houseValue = this.remappedRoyal(houseValues[index]);
+
+                if (userValue !== houseValue) {
+                    return this.findBestCard(userValue, houseValue) === 1
+                        ? FinalResult[FinalResult.Win]
+                        : FinalResult[FinalResult.Loss];
+                }
+                index++;
+            }
+
+            return FinalResult[FinalResult.Tie];
+        }
+    }
+
+    private remappedRoyal(card: number | string): number {
+        if (typeof card === 'number') {
+            return card;
+        } else {
+            return +this.royalCardsMapping[card];
+        }
+    }
+
+    private sortAndRemoveDuplicates(valuesCount: {}): (string | number)[] {
+        return Object.keys(valuesCount)
+            .map((key) => +key || key)
+            .sort((a, b) => {
+                if (valuesCount[a] < valuesCount[b]) {
+                    return 1;
+                } else if (valuesCount[a] > valuesCount[b]) {
+                    return -1;
+                } else {
+                    if (this.remappedRoyal(a) < this.remappedRoyal(b)) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                }
+            });
     }
 
     private getCardValuesSorted(hand: string): number[] {
@@ -80,15 +121,15 @@ export class CompareService {
         return suits.every((suit: string) => suit === suits[0]);
     }
 
-    getMinimum(array: number[]): number {
+    private getMinimum(array: number[]): number {
         return Math.min(...array);
     }
 
-    getMaximum(array: number[]): number {
+    private getMaximum(array: number[]): number {
         return Math.max(...array);
     }
 
-    isStraight(cardsValues: number[]): boolean {
+    private isStraight(cardsValues: number[]): boolean {
         const arr = cardsValues.sort((a: number, b: number) => a - b);
 
         return arr
@@ -96,6 +137,8 @@ export class CompareService {
             .map((n, i) => n - arr[i])
             .every((value) => value === 1);
     }
+
+    private findBestCard = (a: number, b: number): number => (a > b ? 1 : -1);
 
     private isRoyal(cardsValues: number[]): boolean {
         const straight = this.isStraight(cardsValues);
@@ -131,9 +174,6 @@ export class CompareService {
 
     private getPointsFromRule(hand: string): number {
         if (!this.validation(hand)) {
-            console.log(
-                'Cards and suits are not valid, therefore cannot compare'
-            );
             return 0;
         }
 
@@ -176,27 +216,5 @@ export class CompareService {
         }
 
         return points;
-    }
-
-    private whoHasTheBestHand(
-        houseHand: string,
-        userHand: string
-    ): FinalResult {
-        const cardValuesHouse = this.getCardValuesSorted(houseHand);
-        const cardValuesUser = this.getCardValuesSorted(userHand);
-
-        const houseMaxNumber = this.getMaximum(cardValuesHouse);
-        const userMaxNumber = this.getMaximum(cardValuesUser);
-
-        console.log('houseMaxNumber', houseMaxNumber);
-        console.log('userMaxNumber', userMaxNumber);
-
-        if (houseMaxNumber > userMaxNumber) {
-            return FinalResult.Loss;
-        } else if (houseMaxNumber < userMaxNumber) {
-            return FinalResult.Win;
-        } else {
-            return FinalResult.Tie;
-        }
     }
 }

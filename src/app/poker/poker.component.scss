@@ -1,4 +1,11 @@
 .poker {
+    padding: 2em;
+    color: #fff;
+
+    .poker-form {
+        width: 60%;
+    }
+
     .table {
         margin-top: 150px;
         border: 1px solid #20461b;
@@ -48,16 +55,11 @@
             }
         }
     }
+
+    .result {
+        text-align: center;
+        padding: 2em 0;
+        font-size: 30px;
+    }
 }
 
-// .poker
-// {
-// 	width:50%;
-// 	margin: 20px auto;
-// 	background:dodgerblue;
-// 	border:solid 10px black;
-// 	padding: 10px;
-// 	border-radius:10px;
-// 	text-align: center;
-// 	color:white;
-// }

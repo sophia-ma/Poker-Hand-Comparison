@@ -1,8 +1,29 @@
 <div class="container-fluid poker">
-    <span>Players: 2</span>
-    <button type="button" class="btn btn-light" (click)="generateCards()">
-        Generate Cards
-    </button>
+    <form class="poker-form" [formGroup]="form">
+        <div class="form-row">
+            <div class="col">
+                <input
+                    type="text"
+                    class="form-control"
+                    id="user-name"
+                    placeholder="Please enter your name"
+                    formControlName="playerName"
+                />
+            </div>
+
+            <div class="col">
+                <button
+                    type="button"
+                    class="btn btn-light"
+                    (click)="generateCards()"
+                >
+                    Play
+                </button>
+            </div>
+        </div>
+    </form>
 
     <table class="table" id="table"></table>
+
+    <div class="result">{{result}}</div>
 </div>
