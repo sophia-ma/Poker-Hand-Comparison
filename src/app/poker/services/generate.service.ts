@@ -49,10 +49,9 @@ export class GenerateService {
         });
     }
 
-    generateHand(players: number = 2): [string, Card[], CardValueCount] {
+    generateHand(players: number = 2): [string, Card[]] {
         let result: string[] = [];
         let cards: Card[] = [];
-        const valuesCount: CardValueCount = {};
 
         for (let i = 0; i < this.validCardsAmount; i++) {
             const card = this.generateRandomCard();
@@ -69,18 +68,6 @@ export class GenerateService {
             this.clearCache();
         }
 
-        for (const element of cards) {
-            const { value } = element;
-
-            if (valuesCount[value] === undefined) {
-                valuesCount[value] = 1;
-            } else {
-                valuesCount[value]++;
-            }
-        }
-        console.log('cards', cards);
-        console.log('valuesCount', valuesCount);
-
-        return [result.join(' ').toUpperCase(), cards, valuesCount];
+        return [result.join(' ').toUpperCase(), cards];
     }
 }

@@ -29,13 +29,10 @@ export class PokerComponent {
     generateCards(): void {
         this.generateService.clearCache();
 
-        const [houseHand, houseDeck, houseValuesCount] = this.generateService.generateHand();
-        const [userHand, userDeck, userValuesCount] = this.generateService.generateHand();
+        const [houseHand, houseDeck] = this.generateService.generateHand();
+        const [userHand, userDeck] = this.generateService.generateHand();
 
-        console.log(houseValuesCount);
-        console.log(userValuesCount);
-
-        this.result = this.compareService.comparison([houseHand, userHand], [houseValuesCount, userValuesCount]);
+        this.result = this.compareService.comparison(houseHand, userHand);
 
         const tableElement = this.element.nativeElement.querySelector('#table');
         this.renderer.setProperty(tableElement, 'textContent', '');

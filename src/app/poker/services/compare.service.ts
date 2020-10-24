@@ -8,7 +8,7 @@ import {
     Suits,
     ValuesOccurrence,
 } from '../enums';
-import { CardValueCount } from '../models';
+import { Card, CardValueCount } from '../models';
 
 @Injectable({
     providedIn: 'root',
@@ -23,10 +23,12 @@ export class CompareService {
         A: '14',
     };
 
-    comparison(hands: string[], valuesCount: CardValueCount[]): string {
+    comparison(houseHand: string, userHand: string): string {
         // TODO v2: More players implementation
-        const pointsHouse = this.getPointsFromRule(hands[0]);
-        const pointsUser = this.getPointsFromRule(hands[1]);
+        const pointsHouse = this.getPointsFromRule(houseHand);
+        const pointsUser = this.getPointsFromRule(userHand);
+        const houseValuesCount = this.getValuesCount(houseHand);
+        const userValuesCount = this.getValuesCount(userHand);
 
         if (!pointsHouse || !pointsUser) {
             return 'Cards and suits are not valid, therefore cannot compare';
@@ -40,8 +42,6 @@ export class CompareService {
         } else if (pointsHouse < pointsUser) {
             return FinalResult[FinalResult.Win];
         } else {
-            const [houseValuesCount, userValuesCount] = valuesCount;
-
             let index = 0;
             const houseValues = this.sortAndRemoveDuplicates(houseValuesCount);
             const userValues = this.sortAndRemoveDuplicates(userValuesCount);
@@ -55,11 +55,35 @@ export class CompareService {
                         ? FinalResult[FinalResult.Win]
                         : FinalResult[FinalResult.Loss];
                 }
+
                 index++;
             }
 
             return FinalResult[FinalResult.Tie];
         }
+    }
+
+    private getValuesCount(hand: string): CardValueCount {
+        const cards: Card[] = hand.split(' ').map((x: string) => {
+            return {
+                suit: x.charAt(1) as Suits,
+                value: x.charAt(0) as CardValue,
+            };
+        });
+
+        const valuesCount: CardValueCount = {};
+
+        for (const element of cards) {
+            const { value } = element;
+
+            if (valuesCount[value] === undefined) {
+                valuesCount[value] = 1;
+            } else {
+                valuesCount[value]++;
+            }
+        }
+
+        return valuesCount;
     }
 
     private remappedRoyal(card: number | string): number {
