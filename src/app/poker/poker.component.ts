@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, Renderer2 } from '@angular/core';
 
 import {
     FinalResult,
@@ -6,30 +6,18 @@ import {
     Suits,
     CardOccurrence,
     ValuesOccurrence,
+    CardValue,
 } from './enums';
+import { Card } from './models';
+import { GenerateService } from './services';
 
 @Component({
     selector: 'app-poker',
     templateUrl: './poker.component.html',
     styleUrls: ['./poker.component.scss'],
 })
-export class PokerComponent implements OnInit {
-    cards: string[] = [
-        '2',
-        '3',
-        '4',
-        '5',
-        '6',
-        '7',
-        '8',
-        '9',
-        'T',
-        'J',
-        'Q',
-        'K',
-        'A',
-    ];
-
+export class PokerComponent {
+    cards: CardValue[] = Object.values(CardValue);
     royalCardsMapping = {
         T: '10',
         J: '11',
@@ -38,16 +26,11 @@ export class PokerComponent implements OnInit {
         A: '14',
     };
 
-    ngOnInit(): void {
-        // @TODO v2: Generate auto hands
-        // const botHand = 'KS KD 8H 8D 8S';
-        // const userHand = '5S 6D 3S 2S AS';
-
-        const botHand = '6H 7H 9H 8H TH';
-        const userHand = '8S TS 9S QS JS';
-
-        this.comparison([botHand.toUpperCase(), userHand.toUpperCase()], 2);
-    }
+    constructor(
+        private generateService: GenerateService,
+        private element: ElementRef,
+        private renderer: Renderer2,
+    ) {}
 
     getCardValuesSorted(hand: string): number[] {
         const values = hand.split(' ').map((x: string) => {
@@ -69,7 +52,9 @@ export class PokerComponent implements OnInit {
 
         const validCard = hand
             .split(' ')
-            .every((x: string) => this.cards.includes(x.charAt(0)));
+            .every((x: string) =>
+                (this.cards as string[]).includes(x.charAt(0))
+            );
 
         return validSuit && validCard;
     }
@@ -181,21 +166,21 @@ export class PokerComponent implements OnInit {
     comparison(hands: string[], players: number): void {
         // TODO v2: More players implementation
 
-        const pointsBot = this.getPointsFromRule(hands[0]);
+        const pointsHouse = this.getPointsFromRule(hands[0]);
         const pointsUser = this.getPointsFromRule(hands[1]);
 
-        if (!pointsBot || !pointsUser) {
+        if (!pointsHouse || !pointsUser) {
             return;
         }
 
-        console.log('pointsBot', pointsBot);
+        console.log('pointsHouse', pointsHouse);
         console.log('pointsUser', pointsUser);
 
         let final: FinalResult = null;
 
-        if (pointsBot > pointsUser) {
+        if (pointsHouse > pointsUser) {
             final = FinalResult.Loss;
-        } else if (pointsBot < pointsUser) {
+        } else if (pointsHouse < pointsUser) {
             final = FinalResult.Win;
         } else {
             final = this.whoHasTheBestHand(hands[0], hands[1]);
@@ -204,22 +189,90 @@ export class PokerComponent implements OnInit {
         console.log('Final Result:', FinalResult[final]);
     }
 
-    whoHasTheBestHand(botHand: string, userHand: string): FinalResult {
-        const cardValuesBot = this.getCardValuesSorted(botHand);
+    whoHasTheBestHand(houseHand: string, userHand: string): FinalResult {
+        const cardValuesHouse = this.getCardValuesSorted(houseHand);
         const cardValuesUser = this.getCardValuesSorted(userHand);
 
-        const botMaxNumber = this.getMaximum(cardValuesBot);
+        const houseMaxNumber = this.getMaximum(cardValuesHouse);
         const userMaxNumber = this.getMaximum(cardValuesUser);
 
-        console.log('botMaxNumber', botMaxNumber);
+        console.log('houseMaxNumber', houseMaxNumber);
         console.log('userMaxNumber', userMaxNumber);
 
-        if (botMaxNumber > userMaxNumber) {
+        if (houseMaxNumber > userMaxNumber) {
             return FinalResult.Loss;
-        } else if (botMaxNumber < userMaxNumber) {
+        } else if (houseMaxNumber < userMaxNumber) {
             return FinalResult.Win;
         } else {
             return FinalResult.Tie;
+        }
+    }
+
+    generateCards(): void {
+        this.generateService.clearCache();
+
+        const [houseHand, houseDeck] = this.generateService.generateHand();
+        const [userHand, userDeck] = this.generateService.generateHand();
+
+        this.comparison([houseHand, userHand], 2);
+
+        const tableElement = this.element.nativeElement.querySelector('#table');
+        this.renderer.setProperty(tableElement, 'textContent', '');
+
+        this.createHtml(houseDeck, tableElement, 'House');
+        this.createHtml(userDeck, tableElement, 'User');
+    }
+
+    createHtml(deck: Card[], tableElement: HTMLElement, title: string): void {
+        const row = this.renderer.createElement('tr');
+        const cell = this.renderer.createElement('td');
+
+        this.renderer.appendChild(tableElement, row);
+        this.renderer.appendChild(tableElement, cell);
+
+
+        this.renderer.addClass(cell, 'title');
+        this.renderer.setProperty(cell, 'textContent', title);
+
+        this.renderer.appendChild(row, cell);
+
+        for (let i = 0; i < 5; i++) {
+            const card = this.renderer.createElement('td');
+            const spanValue = this.renderer.createElement('span');
+            const spanSuit = this.renderer.createElement('span');
+            let icon = '';
+
+            if (deck[i].suit === Suits.Hearts) {
+                icon = '\u2665';
+                this.renderer.addClass(card, 'red');
+            } else if (deck[i].suit === Suits.Spades) {
+                icon = '\u2660';
+
+            } else if (deck[i].suit === Suits.Diamonds) {
+                icon = '\u2666';
+                this.renderer.addClass(card, 'red');
+            } else {
+                icon = '\u2663';
+            }
+
+            this.renderer.setProperty(
+                spanValue,
+                'textContent',
+                deck[i].value
+            );
+
+            this.renderer.setProperty(
+                spanSuit,
+                'textContent',
+                icon
+            );
+
+            this.renderer.addClass(card, 'card-cell');
+            this.renderer.addClass(spanValue, 'value');
+            this.renderer.addClass(spanSuit, 'suit');
+            this.renderer.appendChild(card, spanValue);
+            this.renderer.appendChild(card, spanSuit);
+            this.renderer.appendChild(row, card);
         }
     }
 }

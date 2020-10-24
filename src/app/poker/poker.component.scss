@@ -1,0 +1,63 @@
+.poker {
+    .table {
+        margin-top: 150px;
+        border: 1px solid #20461b;
+        background-color: #20461b;
+        color: #fff;
+
+        .title {
+            font-weight: 600;
+            width: 16.66%;
+        }
+
+        & td,
+        th {
+            border-top: none;
+            margin-top: 5px;
+            padding: 0px 5px;
+        }
+
+        tr {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .card-cell {
+            width: 5em;
+            height: 7em;
+            background-color: #ffffff;
+            box-shadow: 0 0.0625em 0.125em rgba(0, 0, 0, 0.15);
+            border-radius: 0.25em;
+            color: black;
+
+            &.red {
+                color: red;
+            }
+
+            .value {
+                font-size: 30px;
+            }
+
+            .suit {
+                display: flex;
+                font-size: 40px;
+
+                justify-content: center;
+            }
+        }
+    }
+}
+
+// .poker
+// {
+// 	width:50%;
+// 	margin: 20px auto;
+// 	background:dodgerblue;
+// 	border:solid 10px black;
+// 	padding: 10px;
+// 	border-radius:10px;
+// 	text-align: center;
+// 	color:white;
+// }
