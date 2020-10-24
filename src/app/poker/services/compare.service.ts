@@ -23,7 +23,7 @@ export class CompareService {
         A: '14',
     };
 
-    comparison(houseHand: string, userHand: string): string {
+    compare(houseHand: string, userHand: string): FinalResult {
         // TODO v2: More players implementation
         const pointsHouse = this.getPointsFromRule(houseHand);
         const pointsUser = this.getPointsFromRule(userHand);
@@ -31,16 +31,16 @@ export class CompareService {
         const userValuesCount = this.getValuesCount(userHand);
 
         if (!pointsHouse || !pointsUser) {
-            return 'Cards and suits are not valid, therefore cannot compare';
+            return FinalResult.Invalid;
         }
 
         console.log('pointsHouse', pointsHouse);
         console.log('pointsUser', pointsUser);
 
         if (pointsHouse > pointsUser) {
-            return FinalResult[FinalResult.Loss];
+            return FinalResult.Loss;
         } else if (pointsHouse < pointsUser) {
-            return FinalResult[FinalResult.Win];
+            return FinalResult.Win;
         } else {
             let index = 0;
             const houseValues = this.sortAndRemoveDuplicates(houseValuesCount);
@@ -52,14 +52,14 @@ export class CompareService {
 
                 if (userValue !== houseValue) {
                     return this.findBestCard(userValue, houseValue) === 1
-                        ? FinalResult[FinalResult.Win]
-                        : FinalResult[FinalResult.Loss];
+                        ? FinalResult.Win
+                        : FinalResult.Loss;
                 }
 
                 index++;
             }
 
-            return FinalResult[FinalResult.Tie];
+            return FinalResult.Tie;
         }
     }
 
@@ -211,7 +211,6 @@ export class CompareService {
 
         let points = 0;
 
-        // TODO: Sort this mess
         if (straight) {
             points = Rules.Straight;
             if (flush) {

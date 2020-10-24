@@ -1,7 +1,7 @@
 import { Component, ElementRef, Renderer2 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
-import { Suits } from './enums';
+import { FinalResult, Suits } from './enums';
 import { Card } from './models';
 import { GenerateService, CompareService } from './services';
 
@@ -12,7 +12,8 @@ import { GenerateService, CompareService } from './services';
 })
 export class PokerComponent {
     form: FormGroup;
-    result: string;
+    result: FinalResult;
+    FinalResult = FinalResult;
 
     constructor(
         private generateService: GenerateService,
@@ -32,7 +33,7 @@ export class PokerComponent {
         const [houseHand, houseDeck] = this.generateService.generateHand();
         const [userHand, userDeck] = this.generateService.generateHand();
 
-        this.result = this.compareService.comparison(houseHand, userHand);
+        this.result = this.compareService.compare(houseHand, userHand);
 
         const tableElement = this.element.nativeElement.querySelector('#table');
         this.renderer.setProperty(tableElement, 'textContent', '');

@@ -25,5 +25,7 @@
 
     <table class="table" id="table"></table>
 
-    <div class="result">{{result}}</div>
+    <div class="result" *ngIf="result">
+        {{ result }} ({{ FinalResult[result] }})
+    </div>
 </div>
