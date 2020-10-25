@@ -206,7 +206,7 @@ export class CompareService {
             points = Rules.Straight;
         } else if (flush) {
             points = Rules.Flush;
-        }else if (cardOccurrence === CardOccurrence.FullHouseorFourOfaKind) {
+        } else if (cardOccurrence === CardOccurrence.FullHouseorFourOfaKind) {
             if (occurrenceCount === ValuesOccurrence.FourOfaKind) {
                 points = Rules.FourOfaKind;
             } else if (occurrenceCount === ValuesOccurrence.FullHouse) {
