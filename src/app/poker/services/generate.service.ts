@@ -40,8 +40,6 @@ export class GenerateService {
     }
 
     clearCache(): void {
-        console.log('%c Cached has been cleared', 'color: #FFEE57');
-
         this.totalCardsUsed = 0;
 
         Object.keys(this.cache).forEach((suit) => {

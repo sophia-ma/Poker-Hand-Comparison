@@ -34,9 +34,6 @@ export class CompareService {
             return FinalResult.Invalid;
         }
 
-        console.log('pointsHouse', pointsHouse);
-        console.log('pointsUser', pointsUser);
-
         if (pointsHouse > pointsUser) {
             return FinalResult.Loss;
         } else if (pointsHouse < pointsUser) {
@@ -141,10 +138,6 @@ export class CompareService {
         return suits.every((suit: string) => suit === suits[0]);
     }
 
-    private getMinimum(array: number[]): number {
-        return Math.min(...array);
-    }
-
     private getMaximum(array: number[]): number {
         return Math.max(...array);
     }
@@ -207,16 +200,13 @@ export class CompareService {
 
         let points = 0;
 
-        if (straight) {
+        if (straight && flush) {
+            points = royal ? Rules.RoyalFlush : Rules.StraightFlush;
+        } else if (straight) {
             points = Rules.Straight;
-            if (flush) {
-                if (points === Rules.Straight) {
-                    points = royal ? Rules.RoyalFlush : Rules.StraightFlush;
-                } else {
-                    points = Rules.Flush;
-                }
-            }
-        } else if (cardOccurrence === CardOccurrence.FullHouseorFourOfaKind) {
+        } else if (flush) {
+            points = Rules.Flush;
+        }else if (cardOccurrence === CardOccurrence.FullHouseorFourOfaKind) {
             if (occurrenceCount === ValuesOccurrence.FourOfaKind) {
                 points = Rules.FourOfaKind;
             } else if (occurrenceCount === ValuesOccurrence.FullHouse) {
