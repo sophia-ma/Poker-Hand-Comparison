@@ -42,24 +42,20 @@ export class CompareService {
         } else if (pointsHouse < pointsUser) {
             return FinalResult.Win;
         } else {
-            let index = 0;
             const houseValues = this.sortAndRemoveDuplicates(houseValuesCount);
             const userValues = this.sortAndRemoveDuplicates(userValuesCount);
 
-            while (index < userValues.length) {
-                const userValue = this.remappedRoyal(userValues[index]);
-                const houseValue = this.remappedRoyal(houseValues[index]);
+            // Note: index = 0 because array is sorted based on value count desc
+            const userValue = this.remappedRoyal(userValues[0]);
+            const houseValue = this.remappedRoyal(houseValues[0]);
 
-                if (userValue !== houseValue) {
-                    return this.findBestCard(userValue, houseValue) === 1
-                        ? FinalResult.Win
-                        : FinalResult.Loss;
-                }
-
-                index++;
+            if (userValue !== houseValue) {
+                return this.findBestCard(userValue, houseValue) === 1
+                    ? FinalResult.Win
+                    : FinalResult.Loss;
+            } else {
+                return FinalResult.Tie;
             }
-
-            return FinalResult.Tie;
         }
     }
 
