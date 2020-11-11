@@ -3,7 +3,7 @@ Poker Hand Comparison is a little program that will compare two hands of poker a
 https://en.wikipedia.org/wiki/Texas_hold_%27em#Hand_values
 
 
-Deployed Version: https://poker-hand-comparison.netlify.app/poker
+Deployed Version: https://poker-hand-comparison.netlify.app
 
 ### Getting started
 
