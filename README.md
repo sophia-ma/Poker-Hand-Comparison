@@ -1,12 +1,20 @@
-# Poker-Hand-Comparison
-Poker Hand Comparison is a little program that will compare two hands of poker according to the rules of Texas Hold'em rules
-https://en.wikipedia.org/wiki/Texas_hold_%27em#Hand_values
+##  About
+This is a personal project built in Angular. Poker Hand Comparison is a little program that will compare two hands of poker according to the rules of Texas Hold'em rules https://en.wikipedia.org/wiki/Texas_hold_%27em#Hand_values
 
+##  Built with
+- Angular 10
+- Typescript
+- Bootstrap
 
-Deployed Version: https://poker-hand-comparison.netlify.app
+##  Functionalities
+- 2 Players - User and House
+- Poker hands random generation
+- Poker hands comparison
 
-### Getting started
+##  Deployed Version
+🃏 https://poker-hand-comparison.netlify.app 🃏
 
-- install all dependencies (npm install)
-- run the application (ng serve --open)
-- enter your name and play 😁
+## Getting started
+- Install all dependencies (npm install)
+- Run the application (ng serve --open)
+- Enter your name and play 😁
